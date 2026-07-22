@@ -1,0 +1,15 @@
+{
+  "name": "@template/services",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@effect/platform": "catalog:",
+    "@template/shared": "workspace:*",
+    "effect": "catalog:"
+  }
+}

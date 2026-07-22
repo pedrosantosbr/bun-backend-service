@@ -1,0 +1,27 @@
+{
+  "name": "@template/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "db:push": "drizzle-kit push --force",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "catalog:",
+    "@template/shared": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:",
+    "mongoose": "catalog:",
+    "pg": "catalog:"
+  },
+  "devDependencies": {
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:"
+  }
+}

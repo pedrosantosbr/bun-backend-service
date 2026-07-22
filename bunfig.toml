@@ -1,0 +1,6 @@
+[install]
+exact = true
+saveTextLockfile = true
+
+[test]
+preload = ["./packages/core/src/test-setup.ts"]

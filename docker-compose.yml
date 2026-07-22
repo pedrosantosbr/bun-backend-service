@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: template-postgres
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: template
+    command: ["postgres", "-c", "fsync=off", "-c", "full_page_writes=off"]
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d template"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  mongo:
+    image: mongo:7
+    container_name: template-mongo
+    ports:
+      - "127.0.0.1:27018:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  elasticmq:
+    image: softwaremill/elasticmq-native:1.6.5
+    container_name: template-elasticmq
+    ports:
+      - "127.0.0.1:9324:9324"
+    volumes:
+      - ./elasticmq.conf:/opt/elasticmq.conf:ro

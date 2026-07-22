@@ -1,0 +1,79 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "ignorePatterns": ["**/sst-env.d.ts", "packages/docs/**"],
+  "rules": {},
+  "overrides": [
+    {
+      "files": ["packages/shared/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@template/core", "@template/core/*"],
+                "message": "shared cannot import from core - shared is the foundation layer"
+              },
+              {
+                "group": ["@template/services", "@template/services/*"],
+                "message": "shared cannot import from services - shared is the foundation layer"
+              },
+              {
+                "group": ["@template/api", "@template/api/*"],
+                "message": "shared cannot import from api - shared is the foundation layer"
+              },
+              {
+                "group": ["@template/functions", "@template/functions/*"],
+                "message": "shared cannot import from functions - shared is the foundation layer"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/services/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@template/core", "@template/core/*"],
+                "message": "services cannot import from core - use @template/shared instead"
+              },
+              {
+                "group": ["@template/api", "@template/api/*"],
+                "message": "services cannot import from api - wrong layer direction"
+              },
+              {
+                "group": ["@template/functions", "@template/functions/*"],
+                "message": "services cannot import from functions - wrong layer direction"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["packages/core/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@template/api", "@template/api/*"],
+                "message": "core cannot import from api - wrong layer direction"
+              },
+              {
+                "group": ["@template/functions", "@template/functions/*"],
+                "message": "core cannot import from functions - wrong layer direction"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@template/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "catalog:",
+    "@template/core": "workspace:*",
+    "@template/services": "workspace:*",
+    "@template/shared": "workspace:*",
+    "effect": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  }
+}

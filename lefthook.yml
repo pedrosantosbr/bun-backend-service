@@ -1,0 +1,7 @@
+pre-commit:
+  jobs:
+    - name: oxfmt
+      run: bunx oxfmt {staged_files}
+      glob: "*.{ts,tsx,js,jsx,mjs,cjs,json,md}"
+      exclude: '(^|/)\S+\.d\.ts$'
+      stage_fixed: true
