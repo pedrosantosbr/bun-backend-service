@@ -7,7 +7,7 @@
 process.env.STAGE = "test";
 process.env.LOG_LEVEL ??= "warn";
 process.env.POSTGRES_URL ??=
-  "postgres://postgres:postgres@127.0.0.1:5433/template";
+  "postgres://postgres:postgres@127.0.0.1:5433/template_test";
 process.env.MONGO_URL ??= "mongodb://127.0.0.1:27018/template-test";
 process.env.TASK_QUEUE_URL ??=
   "http://localhost:9324/000000000000/task-execution";

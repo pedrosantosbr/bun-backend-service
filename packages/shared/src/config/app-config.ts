@@ -57,7 +57,7 @@ export const AppConfigLive = Layer.effect(AppConfigService, AppConfig).pipe(
 export const defaultTestConfig: AppConfigType = {
   stage: "test",
   logLevel: "warn",
-  postgresUrl: "postgres://postgres:postgres@127.0.0.1:5433/template",
+  postgresUrl: "postgres://postgres:postgres@127.0.0.1:5433/template_test",
   mongoUrl: "mongodb://127.0.0.1:27018/template-test",
   taskQueueUrl: "http://localhost:9324/000000000000/task-execution",
   sqsEndpoint: Option.some("http://localhost:9324"),
