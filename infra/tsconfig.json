@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": []
+  },
+  "include": ["./**/*.ts", "../sst.config.ts", "../.sst/platform/config.d.ts"]
+}
