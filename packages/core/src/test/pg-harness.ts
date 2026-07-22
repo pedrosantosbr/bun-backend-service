@@ -110,6 +110,16 @@ export const createTestSchema = async (): Promise<void> => {
   schemaReady = true;
 };
 
+/** Runs raw SQL against the test database (fixture surgery in tests). */
+export const executeTestSql = (
+  query: string,
+  params: unknown[] = [],
+): Promise<unknown[]> =>
+  withClient(testPostgresUrl, async (client) => {
+    const result = await client.query(query, params);
+    return result.rows as unknown[];
+  });
+
 export const clearTestData = (): Promise<void> =>
   withClient(testPostgresUrl, async (client) => {
     const tables = await client.query(

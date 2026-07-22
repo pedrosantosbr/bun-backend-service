@@ -27,6 +27,8 @@
     "docs:build": "bun run --cwd packages/docs build"
   },
   "devDependencies": {
+    "@aws-sdk/client-sqs": "catalog:",
+    "@template/functions": "workspace:*",
     "@tsconfig/node22": "22.0.2",
     "@types/bun": "catalog:",
     "lefthook": "2.1.6",
