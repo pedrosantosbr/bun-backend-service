@@ -6,6 +6,7 @@ declare module "sst" {
   export interface Resource {
     ApiToken: { type: "sst.sst.Secret"; value: string };
     EchoProviderApiKey: { type: "sst.sst.Secret"; value: string };
+    EchoProviderBaseUrl: { type: "sst.sst.Secret"; value: string };
     MongoUrl: { type: "sst.sst.Secret"; value: string };
     PostgresUrl: { type: "sst.sst.Secret"; value: string };
     TaskDlq: { type: "sst.aws.Queue"; url: string };

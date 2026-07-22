@@ -51,6 +51,12 @@ export interface TaskStoreShape {
     olderThan: Date,
     limit: number,
   ) => Effect.Effect<readonly TaskRow[], DatabaseQueryError>;
+  /** Pending tasks nobody has touched in a while — their execute message
+   * was lost (publish failure, queue purge). They only need re-enqueueing. */
+  readonly findStalePending: (
+    olderThan: Date,
+    limit: number,
+  ) => Effect.Effect<readonly TaskRow[], DatabaseQueryError>;
 }
 
 export class TaskStore extends Context.Tag("@template/core/TaskStore")<
@@ -163,6 +169,18 @@ export const TaskStoreLive = Layer.effect(
                 eq(tasks.status, "processing"),
                 lt(tasks.updatedAt, olderThan),
               ),
+            )
+            .orderBy(asc(tasks.updatedAt))
+            .limit(limit),
+        ),
+
+      findStalePending: (olderThan, limit) =>
+        runQuery("TaskStore.findStalePending", () =>
+          db
+            .select()
+            .from(tasks)
+            .where(
+              and(eq(tasks.status, "pending"), lt(tasks.updatedAt, olderThan)),
             )
             .orderBy(asc(tasks.updatedAt))
             .limit(limit),

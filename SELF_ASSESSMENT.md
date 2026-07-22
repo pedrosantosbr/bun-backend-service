@@ -102,10 +102,10 @@ with strong seams; the gaps are the same ones the production repos have.
 
 1. **Transactional outbox** for create+enqueue. Today `TaskService.create`
    inserts, then publishes; a crash between the two leaves a pending task
-   until the cron sweeps it. An outbox table written in the same
-   transaction + a drain Lambda (platform has this pattern in
-   `liabilities-outbox`) makes delivery exactly-once-ish and would be the
-   single most instructive addition.
+   until the cron re-enqueues it (up to ~15 minutes of latency). An outbox
+   table written in the same transaction + a drain Lambda (platform has
+   this pattern in `liabilities-outbox`) makes delivery exactly-once-ish
+   and would be the single most instructive addition.
 2. **OpenAPI generation** from the zod schemas (e.g. `hono-openapi` +
    `zod-openapi`), served at `/docs/openapi.json` and rendered in the
    Starlight site — platform generates specs from route metadata; the
@@ -125,9 +125,10 @@ with strong seams; the gaps are the same ones the production repos have.
    exists from day one.
 7. **Value objects & branded types**: brand task ids (`TaskId`), use
    Effect `Schema.brand` at boundaries to stop id-mixups at compile time.
-8. **Config secrets hygiene**: local defaults live in code for DX; consider
-   an `.env.example` + failing fast in non-local stages when a variable is
-   missing, so a misdeployed Lambda cannot silently point at localhost.
+8. **Config fail-fast in deployed stages**: local defaults live in code for
+   DX (`.env.example` documents them); consider failing fast when STAGE is
+   not local/test and a connection variable is missing, so a misdeployed
+   Lambda cannot silently point at localhost.
 9. **Queue consumer abstraction**: a transport-agnostic
    `makeBatchConsumer` with an SQS adapter would decouple workers from
    `aws-lambda` types and make the local poller trivial for any queue.

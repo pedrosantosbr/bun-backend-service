@@ -11,23 +11,26 @@ const BATCH_LIMIT = 50;
 
 /**
  * Safety net for the non-atomic create+enqueue and for workers that died
- * mid-task: any task stuck in `processing` is either re-queued (attempts
- * remaining) or marked failed (attempts exhausted). Per-task errors are
- * logged and skipped so one bad row never blocks the sweep.
+ * mid-task:
+ * - tasks stuck in `processing` are re-queued (attempts remaining) or
+ *   marked failed (attempts exhausted)
+ * - stale `pending` tasks (their execute message was lost, e.g. the
+ *   publish after insert failed) are simply re-enqueued — duplicates are
+ *   safe because the worker's claim is idempotent.
+ * Per-task errors are logged and skipped so one bad row never blocks the
+ * sweep.
  */
 export const requeueStuckTasks = Effect.gen(function* () {
   const store = yield* TaskStore;
   const publisher = yield* QueuePublisher;
   const config = yield* AppConfigService;
-
-  const stuck = yield* store.findStuckProcessing(
-    new Date(Date.now() - STUCK_AFTER_MS),
-    BATCH_LIMIT,
-  );
-  if (stuck.length === 0) return { requeued: 0, failed: 0 };
+  const olderThan = new Date(Date.now() - STUCK_AFTER_MS);
 
   let requeued = 0;
   let failed = 0;
+  let reenqueuedPending = 0;
+
+  const stuck = yield* store.findStuckProcessing(olderThan, BATCH_LIMIT);
   yield* Effect.forEach(
     stuck,
     (task) =>
@@ -55,8 +58,32 @@ export const requeueStuckTasks = Effect.gen(function* () {
     { concurrency: 5 },
   );
 
-  yield* Effect.logInfo("requeue sweep finished", { requeued, failed });
-  return { requeued, failed };
+  const stalePending = yield* store.findStalePending(olderThan, BATCH_LIMIT);
+  yield* Effect.forEach(
+    stalePending,
+    (task) =>
+      publisher
+        .send(config.taskQueueUrl, { body: encodeTaskExecuteMessage(task.id) })
+        .pipe(
+          Effect.tap(() => Effect.sync(() => reenqueuedPending++)),
+          Effect.catchAll((error) =>
+            Effect.logError("failed to re-enqueue stale pending task", {
+              taskId: task.id,
+              error: String(error),
+            }),
+          ),
+        ),
+    { concurrency: 5 },
+  );
+
+  if (requeued + failed + reenqueuedPending > 0) {
+    yield* Effect.logInfo("requeue sweep finished", {
+      requeued,
+      failed,
+      reenqueuedPending,
+    });
+  }
+  return { requeued, failed, reenqueuedPending };
 });
 
 let runtime:

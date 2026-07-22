@@ -101,7 +101,7 @@ describe("requeue-stuck-tasks cron", () => {
     });
 
     const summary = await runtime.runTest(requeueStuckTasks);
-    expect(summary).toEqual({ requeued: 1, failed: 0 });
+    expect(summary).toEqual({ requeued: 1, failed: 0, reenqueuedPending: 0 });
 
     expect(await getStatus(stale.id)).toBe("pending");
     expect(await getStatus(fresh.id)).toBe("processing");
@@ -121,13 +121,44 @@ describe("requeue-stuck-tasks cron", () => {
     });
 
     const summary = await runtime.runTest(requeueStuckTasks);
-    expect(summary).toEqual({ requeued: 0, failed: 1 });
+    expect(summary).toEqual({ requeued: 0, failed: 1, reenqueuedPending: 0 });
     expect(await getStatus(exhausted.id)).toBe("failed");
     expect(await receiveMessageBodies(sqs)).toHaveLength(0);
   });
 
+  it("re-enqueues orphaned pending tasks whose message was lost", async () => {
+    const orphan = await runtime.runTest(
+      Effect.gen(function* () {
+        const store = yield* TaskStore;
+        return yield* store.insert({ id: createId(), title: "orphan" });
+      }),
+    );
+    await executeTestSql(
+      "UPDATE tpl_tasks SET updated_at = now() - interval '30 minutes' WHERE id = $1",
+      [orphan.id],
+    );
+    const fresh = await runtime.runTest(
+      Effect.gen(function* () {
+        const store = yield* TaskStore;
+        return yield* store.insert({ id: createId(), title: "fresh pending" });
+      }),
+    );
+
+    const summary = await runtime.runTest(requeueStuckTasks);
+    expect(summary).toEqual({ requeued: 0, failed: 0, reenqueuedPending: 1 });
+
+    expect(await getStatus(orphan.id)).toBe("pending");
+    expect(await getStatus(fresh.id)).toBe("pending");
+    const bodies = await receiveMessageBodies(sqs);
+    expect(bodies).toHaveLength(1);
+    expect(JSON.parse(bodies[0]!)).toEqual({
+      type: "task.execute",
+      taskId: orphan.id,
+    });
+  });
+
   it("does nothing when no tasks are stuck", async () => {
     const summary = await runtime.runTest(requeueStuckTasks);
-    expect(summary).toEqual({ requeued: 0, failed: 0 });
+    expect(summary).toEqual({ requeued: 0, failed: 0, reenqueuedPending: 0 });
   });
 });

@@ -46,9 +46,10 @@ tasks.markProcessing(taskId).pipe(
 );
 ```
 
-House rules (inherited from platform, enforced by `lint:forbidden`):
+House rules (inherited from platform):
 
-- `Effect.tryPromise`, never `Effect.promise`
+- `Effect.tryPromise`, never `Effect.promise` (this one is machine-enforced
+  by `lint:forbidden`, along with a ban on `await import(...)` in src)
 - no `Effect.either` + manual `_tag` branching
 - no throwaway error types — reuse the shared ones
 - decompose `Effect.gen` functions that grow past ~40 lines

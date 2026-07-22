@@ -1,10 +1,17 @@
-import { echoProviderApiKey, mongoUrl, postgresUrl } from "./secrets";
+import {
+  echoProviderApiKey,
+  echoProviderBaseUrl,
+  mongoUrl,
+  postgresUrl,
+} from "./secrets";
 
 export const taskDlq = new sst.aws.Queue("TaskDlq");
 
+// Visibility timeout stays well above the consumer Lambda timeout so a
+// batch running near the limit is not redelivered mid-processing.
 export const taskQueue = new sst.aws.Queue("TaskQueue", {
   dlq: { queue: taskDlq.arn, retry: 3 },
-  visibilityTimeout: "60 seconds",
+  visibilityTimeout: "6 minutes",
 });
 
 /**
@@ -18,6 +25,7 @@ export const runtimeEnvironment = {
   MONGO_URL: mongoUrl.value,
   TASK_QUEUE_URL: taskQueue.url,
   ECHO_PROVIDER_API_KEY: echoProviderApiKey.value,
+  ECHO_PROVIDER_BASE_URL: echoProviderBaseUrl.value,
   ECHO_PROVIDER_MODE: "http",
 };
 

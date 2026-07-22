@@ -27,7 +27,6 @@ export const interactionKinds = [
   "completed",
   "failed",
   "cancelled",
-  "requeued",
 ] as const;
 
 export type InteractionKind = (typeof interactionKinds)[number];

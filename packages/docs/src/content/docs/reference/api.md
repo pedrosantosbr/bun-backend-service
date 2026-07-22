@@ -44,10 +44,14 @@ request id is echoed back and both propagate to downstream calls.
 
 ```
 pending ──► processing ──► completed
-   │             │
-   │             └──► failed ──► pending (POST /execute or cron retry)
+   │           │    │
+   │           │    └──► failed ──► pending (POST /execute or cron retry)
+   │           └──► pending (cron requeue of stuck tasks)
    └──► cancelled
 ```
 
 Transitions are enforced atomically in the store
-(`UPDATE ... WHERE status IN (...)`); illegal ones return `CONFLICT`.
+(`UPDATE ... WHERE status IN (...)`); illegal ones return `CONFLICT`. The
+requeue cron also re-enqueues the execute message for `pending` tasks that
+haven't moved in 15 minutes (a lost message — e.g. the publish after insert
+failed); duplicates are harmless because the worker's claim is idempotent.

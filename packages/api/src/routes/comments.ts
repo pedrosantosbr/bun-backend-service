@@ -22,11 +22,13 @@ export const commentsRoutes = new Hono()
           const comments = yield* CommentStore;
           yield* service.get(id);
           const comment = yield* comments.addComment({ taskId: id, ...body });
-          yield* comments.recordInteraction({
-            taskId: id,
-            kind: "commented",
-            detail: { author: body.author },
-          });
+          yield* comments
+            .recordInteraction({
+              taskId: id,
+              kind: "commented",
+              detail: { author: body.author },
+            })
+            .pipe(Effect.ignoreLogged);
           return comment;
         }),
       { successStatus: 201 },
