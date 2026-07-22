@@ -35,7 +35,10 @@ export const SqsQueuePublisherLive = Layer.scoped(
   QueuePublisher,
   Effect.gen(function* () {
     const config = yield* AppConfigService;
-    const endpoint = Option.getOrUndefined(config.sqsEndpoint);
+    const isLocalStage = config.stage === "local" || config.stage === "test";
+    const endpoint =
+      Option.getOrUndefined(config.sqsEndpoint) ??
+      (isLocalStage ? "http://localhost:9324" : undefined);
     const client = yield* Effect.acquireRelease(
       Effect.sync(
         () =>

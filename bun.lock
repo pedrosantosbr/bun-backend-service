@@ -22,9 +22,13 @@
         "@template/core": "workspace:*",
         "@template/services": "workspace:*",
         "@template/shared": "workspace:*",
+        "drizzle-orm": "catalog:",
         "effect": "catalog:",
         "hono": "catalog:",
         "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@aws-sdk/client-sqs": "catalog:",
       },
     },
     "packages/core": {

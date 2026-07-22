@@ -27,6 +27,7 @@ const AppConfig = Config.all({
     Config.withDefault("http://localhost:9324/000000000000/task-execution"),
   ),
   sqsEndpoint: Config.option(Config.string("SQS_ENDPOINT")),
+  apiToken: Config.option(Config.redacted("API_TOKEN")),
   echoProvider: Config.all({
     baseUrl: Config.string("ECHO_PROVIDER_BASE_URL").pipe(
       Config.withDefault("http://localhost:4010"),
@@ -61,6 +62,7 @@ export const defaultTestConfig: AppConfigType = {
   mongoUrl: "mongodb://127.0.0.1:27018/template-test",
   taskQueueUrl: "http://localhost:9324/000000000000/task-execution",
   sqsEndpoint: Option.some("http://localhost:9324"),
+  apiToken: Option.none(),
   echoProvider: {
     baseUrl: "http://localhost:4010",
     apiKey: Redacted.make("test-key"),

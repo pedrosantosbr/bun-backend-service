@@ -30,11 +30,11 @@ export const canTransition = (from: TaskStatus, to: TaskStatus): boolean =>
 
 export interface CreateTaskInput {
   readonly title: string;
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 export interface ListTasksFilter {
-  readonly status?: TaskStatus;
-  readonly limit?: number;
-  readonly cursor?: string;
+  readonly status?: TaskStatus | undefined;
+  readonly limit?: number | undefined;
+  readonly cursor?: string | undefined;
 }
