@@ -52,6 +52,13 @@ Import direction is enforced by oxlint. See the docs site for the full
 architecture and guides (add an endpoint / domain / worker / cron /
 provider, migrations, testing).
 
+## Commits
+
+Commit titles use conventional prefixes (`feat:`, `fix:`, `chore:`, `docs:`,
+`refactor:`, `test:`, `perf:`, `build:`, `ci:`, `style:`, `revert:`; optional
+scope and `!`). The lefthook `commit-msg` hook rejects anything else; it is
+installed by `bun install` (postinstall → `lefthook install`).
+
 ## Adopting for a new service
 
 1. Search & replace the `@template/` scope with your service scope.

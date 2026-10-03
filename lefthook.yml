@@ -5,3 +5,8 @@ pre-commit:
       glob: "*.{ts,tsx,js,jsx,mjs,cjs,json,md}"
       exclude: '(^|/)\S+\.d\.ts$'
       stage_fixed: true
+
+commit-msg:
+  jobs:
+    - name: conventional-title
+      run: bun run scripts/check-commit-msg.ts {1}
