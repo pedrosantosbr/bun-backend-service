@@ -67,10 +67,10 @@ export interface TaskServiceShape {
   >;
 }
 
-export class TaskService extends Context.Tag("@template/core/TaskService")<
+export class TaskService extends Context.Service<
   TaskService,
   TaskServiceShape
->() {}
+>()("@template/core/TaskService") {}
 
 export const TaskServiceLive = Layer.effect(
   TaskService,

@@ -31,7 +31,7 @@ const trySqs = <A>(
  * In production the endpoint is unset and the default chain (Lambda role)
  * applies.
  */
-export const SqsQueuePublisherLive = Layer.scoped(
+export const SqsQueuePublisherLive = Layer.effect(
   QueuePublisher,
   Effect.gen(function* () {
     const config = yield* AppConfigService;

@@ -29,7 +29,7 @@ same rules keep the monorepo untangled.
 
 - **Domain logic lives in `core`** — `api` routes and `functions` handlers
   are thin adapters that validate input, call services and shape output.
-- **External providers live in `services`** behind a `Context.Tag`
+- **External providers live in `services`** behind a `Context.Service`
   interface, so `core`/`functions` depend on the interface, never on HTTP
   details.
 - **`shared` is the only place for cross-cutting types** (errors, config).

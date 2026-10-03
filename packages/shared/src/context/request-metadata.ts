@@ -9,9 +9,10 @@ export interface RequestMetadata {
   readonly userId?: string;
 }
 
-export class RequestMetadataService extends Context.Tag(
-  "@template/shared/RequestMetadataService",
-)<RequestMetadataService, RequestMetadata>() {}
+export class RequestMetadataService extends Context.Service<
+  RequestMetadataService,
+  RequestMetadata
+>()("@template/shared/RequestMetadataService") {}
 
 export const requestMetadataLayer = (
   metadata: RequestMetadata,

@@ -7,16 +7,17 @@ export interface MongoDatabase {
   readonly connection: mongoose.Connection;
 }
 
-export class MongoDatabaseService extends Context.Tag(
-  "@template/core/MongoDatabaseService",
-)<MongoDatabaseService, MongoDatabase>() {}
+export class MongoDatabaseService extends Context.Service<
+  MongoDatabaseService,
+  MongoDatabase
+>()("@template/core/MongoDatabaseService") {}
 
 /**
  * A scoped mongoose connection. Always uses createConnection (never the
  * mongoose global) so runtimes and tests can open/close cleanly; models are
  * registered per-connection in each domain's models file.
  */
-export const MongoDatabaseLive = Layer.scoped(
+export const MongoDatabaseLive = Layer.effect(
   MongoDatabaseService,
   Effect.gen(function* () {
     const config = yield* AppConfigService;

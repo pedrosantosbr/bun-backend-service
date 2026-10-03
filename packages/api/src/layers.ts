@@ -21,4 +21,4 @@ export const ApiLayer = Layer.mergeAll(TasksLayer, CommentStoreLive).pipe(
   Layer.provideMerge(InfrastructureLayer),
 );
 
-export type ApiServices = Layer.Layer.Success<typeof ApiLayer>;
+export type ApiServices = Layer.Success<typeof ApiLayer>;

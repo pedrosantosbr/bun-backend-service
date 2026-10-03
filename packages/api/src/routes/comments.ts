@@ -28,7 +28,7 @@ export const commentsRoutes = new Hono()
               kind: "commented",
               detail: { author: body.author },
             })
-            .pipe(Effect.ignoreLogged);
+            .pipe(Effect.ignore({ log: true }));
           return comment;
         }),
       { successStatus: 201 },

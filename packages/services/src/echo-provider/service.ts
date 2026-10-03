@@ -14,6 +14,7 @@ export interface EchoProviderShape {
   readonly healthCheck: () => Effect.Effect<boolean, ProviderError>;
 }
 
-export class EchoProvider extends Context.Tag(
-  "@template/services/EchoProvider",
-)<EchoProvider, EchoProviderShape>() {}
+export class EchoProvider extends Context.Service<
+  EchoProvider,
+  EchoProviderShape
+>()("@template/services/EchoProvider") {}

@@ -3,9 +3,9 @@ title: Effect patterns
 description: The service, layer and error conventions used everywhere.
 ---
 
-## Services: interface + Context.Tag + Layer
+## Services: interface + Context.Service + Layer
 
-Every capability is defined as an interface, addressed by a `Context.Tag`,
+Every capability is defined as an interface, addressed by a `Context.Service`,
 and implemented by a `Layer`:
 
 ```ts
@@ -14,10 +14,9 @@ export interface TaskStoreShape {
     Effect.Effect<TaskRow, DatabaseQueryError | NotFoundError>;
 }
 
-export class TaskStore extends Context.Tag("@template/core/TaskStore")<
-  TaskStore,
-  TaskStoreShape
->() {}
+export class TaskStore extends Context.Service<TaskStore, TaskStoreShape>()(
+  "@template/core/TaskStore",
+) {}
 
 export const TaskStoreLive = Layer.effect(
   TaskStore,
@@ -29,7 +28,8 @@ export const TaskStoreLive = Layer.effect(
 ```
 
 Resources that must be released (db pools, mongo connections, SQS clients)
-use `Layer.scoped` + `Effect.acquireRelease` — disposing the runtime closes
+use `Layer.effect` + `Effect.acquireRelease` (Effect 4 folded `Layer.scoped`
+into `Layer.effect`) — disposing the runtime closes
 them (see `packages/core/src/db/postgres/service.ts`).
 
 ## Errors: Schema.TaggedError only
@@ -37,7 +37,7 @@ them (see `packages/core/src/db/postgres/service.ts`).
 All errors are `Schema.TaggedError` subclasses defined in
 `@template/shared/errors`. Never throw bare `Error`, never return `new
 Error()` from an `Effect.tryPromise` catch. Recover with `catchTag`, not
-`catchAll`:
+`Effect.catch`:
 
 ```ts
 tasks.markProcessing(taskId).pipe(
@@ -50,7 +50,7 @@ House rules (inherited from platform):
 
 - `Effect.tryPromise`, never `Effect.promise` (this one is machine-enforced
   by `lint:forbidden`, along with a ban on `await import(...)` in src)
-- no `Effect.either` + manual `_tag` branching
+- no `Effect.result` + manual `_tag` branching
 - no throwaway error types — reuse the shared ones
 - decompose `Effect.gen` functions that grow past ~40 lines
 

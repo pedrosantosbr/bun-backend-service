@@ -10,9 +10,10 @@ export interface PostgresDatabase {
   readonly pool: pg.Pool;
 }
 
-export class PostgresDatabaseService extends Context.Tag(
-  "@template/core/PostgresDatabaseService",
-)<PostgresDatabaseService, PostgresDatabase>() {}
+export class PostgresDatabaseService extends Context.Service<
+  PostgresDatabaseService,
+  PostgresDatabase
+>()("@template/core/PostgresDatabaseService") {}
 
 const isLambdaRuntime = (): boolean =>
   process.env.AWS_LAMBDA_FUNCTION_NAME !== undefined;
@@ -38,7 +39,7 @@ const makeClient = (connectionString: string) =>
       }).pipe(Effect.ignore),
   );
 
-export const PostgresDatabaseLive = Layer.scoped(
+export const PostgresDatabaseLive = Layer.effect(
   PostgresDatabaseService,
   Effect.gen(function* () {
     const config = yield* AppConfigService;

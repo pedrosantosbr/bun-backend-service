@@ -15,10 +15,10 @@ and consumer share one definition:
 ```ts
 export const InvoiceIssueMessage = Schema.Struct({
   type: Schema.Literal("invoice.issue"),
-  invoiceId: Schema.UUID,
+  invoiceId: Schema.String.check(Schema.isUUID()),
 });
-export const decodeInvoiceIssueMessage = Schema.decodeUnknown(
-  Schema.parseJson(InvoiceIssueMessage),
+export const decodeInvoiceIssueMessage = Schema.decodeUnknownEffect(
+  Schema.fromJsonString(InvoiceIssueMessage),
 );
 ```
 

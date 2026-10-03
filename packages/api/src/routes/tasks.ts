@@ -23,7 +23,7 @@ export const tasksRoutes = new Hono()
           const task = yield* service.create(body);
           yield* comments
             .recordInteraction({ taskId: task.id, kind: "created" })
-            .pipe(Effect.ignoreLogged);
+            .pipe(Effect.ignore({ log: true }));
           return serializeTask(task);
         }),
       { successStatus: 201 },
@@ -86,7 +86,7 @@ export const tasksRoutes = new Hono()
         const task = yield* service.cancel(id);
         yield* comments
           .recordInteraction({ taskId: task.id, kind: "cancelled" })
-          .pipe(Effect.ignoreLogged);
+          .pipe(Effect.ignore({ log: true }));
         return serializeTask(task);
       }),
     ),

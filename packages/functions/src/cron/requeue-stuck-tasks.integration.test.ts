@@ -39,7 +39,7 @@ const CronTestLayer = TasksLayer.pipe(
 );
 
 describe("requeue-stuck-tasks cron", () => {
-  let runtime: TestRuntime<Effect.Effect.Context<typeof requeueStuckTasks>>;
+  let runtime: TestRuntime<Effect.Services<typeof requeueStuckTasks>>;
   let sqs: SQSClient;
 
   beforeAll(async () => {

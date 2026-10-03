@@ -52,13 +52,15 @@ export const handleEffect =
     const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
     const program = fn(c).pipe(
-      Effect.timeoutFail({
+      Effect.timeoutOrElse({
         duration: Duration.millis(timeoutMs),
-        onTimeout: () =>
-          new TimeoutError({
-            message: `request timed out after ${timeoutMs}ms`,
-            timeoutMs,
-          }),
+        orElse: () =>
+          Effect.fail(
+            new TimeoutError({
+              message: `request timed out after ${timeoutMs}ms`,
+              timeoutMs,
+            }),
+          ),
       }),
       Effect.provide(
         requestMetadataLayer({
@@ -76,7 +78,7 @@ export const handleEffect =
       return c.json(ok(exit.value), options.successStatus ?? 200);
     }
 
-    const failure = Cause.failureOption(exit.cause);
+    const failure = Cause.findErrorOption(exit.cause);
     if (Option.isNone(failure)) {
       console.error(`[api] defect handling ${c.req.method} ${c.req.path}`, {
         requestId,

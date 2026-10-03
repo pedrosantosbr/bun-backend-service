@@ -7,9 +7,10 @@ export interface EchoProviderConfigShape {
   readonly timeoutMs: number;
 }
 
-export class EchoProviderConfig extends Context.Tag(
-  "@template/services/EchoProviderConfig",
-)<EchoProviderConfig, EchoProviderConfigShape>() {}
+export class EchoProviderConfig extends Context.Service<
+  EchoProviderConfig,
+  EchoProviderConfigShape
+>()("@template/services/EchoProviderConfig") {}
 
 export const EchoProviderConfigLive = Layer.effect(
   EchoProviderConfig,

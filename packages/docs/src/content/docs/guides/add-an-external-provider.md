@@ -3,14 +3,14 @@ title: Add an external provider
 description: The four-file pattern - interface, config, HTTP live, fake.
 ---
 
-External integrations live in `packages/services` behind a `Context.Tag`
+External integrations live in `packages/services` behind a `Context.Service`
 interface so the rest of the codebase never sees HTTP. Copy
 `packages/services/src/echo-provider/`:
 
 ```
 <provider>/
 ├── types.ts      # wire types + Effect Schema for response decoding
-├── service.ts    # the interface + Context.Tag consumers depend on
+├── service.ts    # the interface + Context.Service consumers depend on
 ├── config.ts     # config tag + Live (from AppConfig) + make*ConfigTest()
 ├── http-live.ts  # real implementation over the base HTTP client
 ├── fake.ts       # deterministic fake + factory with failure injection
@@ -25,9 +25,10 @@ export interface PaymentProviderShape {
   readonly createPayout: (req: PayoutRequest) =>
     Effect.Effect<PayoutResult, ProviderError>;
 }
-export class PaymentProvider extends Context.Tag(
-  "@template/services/PaymentProvider",
-)<PaymentProvider, PaymentProviderShape>() {}
+export class PaymentProvider extends Context.Service<
+  PaymentProvider,
+  PaymentProviderShape
+>()("@template/services/PaymentProvider") {}
 ```
 
 Errors are always `ProviderError` with a machine-readable `code` and a

@@ -6,7 +6,7 @@ import { Schema } from "effect";
  */
 export const TaskExecuteMessage = Schema.Struct({
   type: Schema.Literal("task.execute"),
-  taskId: Schema.UUID,
+  taskId: Schema.String.check(Schema.isUUID()),
 });
 
 export type TaskExecuteMessage = Schema.Schema.Type<typeof TaskExecuteMessage>;
@@ -14,6 +14,6 @@ export type TaskExecuteMessage = Schema.Schema.Type<typeof TaskExecuteMessage>;
 export const encodeTaskExecuteMessage = (taskId: string): string =>
   JSON.stringify({ type: "task.execute", taskId } satisfies TaskExecuteMessage);
 
-export const decodeTaskExecuteMessage = Schema.decodeUnknown(
-  Schema.parseJson(TaskExecuteMessage),
+export const decodeTaskExecuteMessage = Schema.decodeUnknownEffect(
+  Schema.fromJsonString(TaskExecuteMessage),
 );

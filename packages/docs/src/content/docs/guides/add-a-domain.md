@@ -11,7 +11,7 @@ domains/<name>/
 ├── db/schema/<name>.sql.ts   # Drizzle tables (Postgres domains)
 ├── db/models.ts              # mongoose models (Mongo domains)
 ├── types.ts                  # domain types, state machines, pure logic
-├── store.ts                  # repository: Context.Tag + Layer, one class of
+├── store.ts                  # repository: Context.Service + Layer, one class of
 │                             #   tagged error per backend (DatabaseQueryError…)
 ├── <name>-service.ts         # business orchestration over the store(s)
 ├── layers.ts                 # the domain's composed public layer

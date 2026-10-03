@@ -3,9 +3,7 @@ import { Schema } from "effect";
 export class AppError extends Schema.TaggedError<AppError>()("AppError", {
   code: Schema.String,
   message: Schema.String,
-  details: Schema.optional(
-    Schema.Record({ key: Schema.String, value: Schema.Unknown }),
-  ),
+  details: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
   cause: Schema.optional(Schema.Unknown),
 }) {}
 
@@ -33,9 +31,7 @@ export class ConflictError extends Schema.TaggedError<ConflictError>()(
   "ConflictError",
   {
     message: Schema.String,
-    details: Schema.optional(
-      Schema.Record({ key: Schema.String, value: Schema.Unknown }),
-    ),
+    details: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
   },
 ) {}
 

@@ -57,10 +57,10 @@ export interface CommentStoreShape {
   ) => Effect.Effect<readonly InteractionView[], MongoQueryError>;
 }
 
-export class CommentStore extends Context.Tag("@template/core/CommentStore")<
+export class CommentStore extends Context.Service<
   CommentStore,
   CommentStoreShape
->() {}
+>()("@template/core/CommentStore") {}
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;

@@ -45,34 +45,34 @@ export const processTaskExecution = (
 
     yield* comments
       .recordInteraction({ taskId, kind: "processing" })
-      .pipe(Effect.ignoreLogged);
+      .pipe(Effect.ignore({ log: true }));
 
     yield* provider
       .process({ taskId, text: task.description ?? task.title })
       .pipe(
         Effect.flatMap((result) =>
           tasks.markCompleted(taskId, { ...result }).pipe(
-            Effect.zipLeft(
+            Effect.tap(() =>
               comments
                 .recordInteraction({
                   taskId,
                   kind: "completed",
                   detail: { sentiment: result.sentiment },
                 })
-                .pipe(Effect.ignoreLogged),
+                .pipe(Effect.ignore({ log: true })),
             ),
           ),
         ),
         Effect.catchTag("ProviderError", (error) =>
           tasks.markFailed(taskId, `${error.code}: ${error.message}`).pipe(
-            Effect.zipLeft(
+            Effect.tap(() =>
               comments
                 .recordInteraction({
                   taskId,
                   kind: "failed",
                   detail: { code: error.code },
                 })
-                .pipe(Effect.ignoreLogged),
+                .pipe(Effect.ignore({ log: true })),
             ),
           ),
         ),

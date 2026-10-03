@@ -17,6 +17,7 @@ export interface QueuePublisherShape {
   ) => Effect.Effect<{ successCount: number; failedCount: number }, QueueError>;
 }
 
-export class QueuePublisher extends Context.Tag(
-  "@template/core/QueuePublisher",
-)<QueuePublisher, QueuePublisherShape>() {}
+export class QueuePublisher extends Context.Service<
+  QueuePublisher,
+  QueuePublisherShape
+>()("@template/core/QueuePublisher") {}

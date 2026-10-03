@@ -2,7 +2,6 @@ import {
   Config,
   ConfigProvider,
   Context,
-  Effect,
   Layer,
   Option,
   Redacted,
@@ -15,44 +14,44 @@ import {
  * never reads process.env or SST Resource directly.
  */
 const AppConfig = Config.all({
-  stage: Config.string("STAGE").pipe(Config.withDefault("local")),
-  logLevel: Config.string("LOG_LEVEL").pipe(Config.withDefault("info")),
-  postgresUrl: Config.string("POSTGRES_URL").pipe(
+  stage: Config.String("STAGE").pipe(Config.withDefault("local")),
+  logLevel: Config.String("LOG_LEVEL").pipe(Config.withDefault("info")),
+  postgresUrl: Config.String("POSTGRES_URL").pipe(
     Config.withDefault("postgres://postgres:postgres@127.0.0.1:5433/template"),
   ),
-  mongoUrl: Config.string("MONGO_URL").pipe(
+  mongoUrl: Config.String("MONGO_URL").pipe(
     Config.withDefault("mongodb://127.0.0.1:27018/template"),
   ),
-  taskQueueUrl: Config.string("TASK_QUEUE_URL").pipe(
+  taskQueueUrl: Config.String("TASK_QUEUE_URL").pipe(
     Config.withDefault("http://localhost:9324/000000000000/task-execution"),
   ),
-  sqsEndpoint: Config.option(Config.string("SQS_ENDPOINT")),
-  apiToken: Config.option(Config.redacted("API_TOKEN")),
+  sqsEndpoint: Config.option(Config.String("SQS_ENDPOINT")),
+  apiToken: Config.option(Config.Redacted("API_TOKEN")),
   echoProvider: Config.all({
-    baseUrl: Config.string("ECHO_PROVIDER_BASE_URL").pipe(
+    baseUrl: Config.String("ECHO_PROVIDER_BASE_URL").pipe(
       Config.withDefault("http://localhost:4010"),
     ),
-    apiKey: Config.redacted("ECHO_PROVIDER_API_KEY").pipe(
+    apiKey: Config.Redacted("ECHO_PROVIDER_API_KEY").pipe(
       Config.withDefault(Redacted.make("local-dev-key")),
     ),
-    mode: Config.literal(
-      "http",
-      "fake",
-    )("ECHO_PROVIDER_MODE").pipe(Config.withDefault("fake" as const)),
-    timeoutMs: Config.number("ECHO_PROVIDER_TIMEOUT_MS").pipe(
+    mode: Config.Literals(["http", "fake"], "ECHO_PROVIDER_MODE").pipe(
+      Config.withDefault("fake" as const),
+    ),
+    timeoutMs: Config.Number("ECHO_PROVIDER_TIMEOUT_MS").pipe(
       Config.withDefault(10_000),
     ),
   }),
 });
 
-export type AppConfigType = Effect.Effect.Success<typeof AppConfig>;
+export type AppConfigType = Config.Success<typeof AppConfig>;
 
-export class AppConfigService extends Context.Tag(
-  "@template/shared/AppConfigService",
-)<AppConfigService, AppConfigType>() {}
+export class AppConfigService extends Context.Service<
+  AppConfigService,
+  AppConfigType
+>()("@template/shared/AppConfigService") {}
 
 export const AppConfigLive = Layer.effect(AppConfigService, AppConfig).pipe(
-  Layer.provide(Layer.setConfigProvider(ConfigProvider.fromEnv())),
+  Layer.provide(ConfigProvider.layer(ConfigProvider.fromEnv())),
 );
 
 export const defaultTestConfig: AppConfigType = {

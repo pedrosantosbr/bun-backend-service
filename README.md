@@ -4,7 +4,7 @@ A production-shaped template for new backend services, capturing the
 patterns we use today across the platform and liabilities repos:
 
 - **Bun workspaces** monorepo, raw-TS packages, `catalog:` pinned versions
-- **Effect TS** — Context.Tag services, Layers, `Schema.TaggedError` errors
+- **Effect TS 4** — Context.Service services, Layers, `Schema.TaggedError` errors
 - **Hono** HTTP API (Bun dev server ⇄ AWS Lambda, same app)
 - **Postgres via Drizzle** (prefixed tables, push + generated migrations)
 - **MongoDB via mongoose** (scoped connections, per-connection models)

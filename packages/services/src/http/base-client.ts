@@ -1,8 +1,4 @@
-import {
-  FetchHttpClient,
-  HttpClient,
-  HttpClientRequest,
-} from "@effect/platform";
+import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/http";
 import { getCorrelationId, getRequestId } from "@template/shared/context";
 import { AppError } from "@template/shared/errors";
 import { Duration, Effect, Schedule } from "effect";
@@ -75,13 +71,15 @@ export const makeJsonRequest = (
                 cause: error,
               }),
           ),
-          Effect.timeoutFail({
+          Effect.timeoutOrElse({
             duration: Duration.millis(timeoutMs),
-            onTimeout: () =>
-              new AppError({
-                code: "TIMEOUT",
-                message: `${options.method} ${options.url} timed out after ${timeoutMs}ms`,
-              }),
+            orElse: () =>
+              Effect.fail(
+                new AppError({
+                  code: "TIMEOUT",
+                  message: `${options.method} ${options.url} timed out after ${timeoutMs}ms`,
+                }),
+              ),
           }),
         );
         if (response.status < 200 || response.status >= 300) {
@@ -110,11 +108,10 @@ export const makeJsonRequest = (
 
     return yield* attempt.pipe(
       Effect.retry({
-        schedule: Schedule.exponential(Duration.millis(100)).pipe(
-          Schedule.intersect(
-            Schedule.recurs(options.retries ?? DEFAULT_RETRIES),
-          ),
-        ),
+        schedule: Schedule.max([
+          Schedule.exponential(Duration.millis(100)),
+          Schedule.recurs(options.retries ?? DEFAULT_RETRIES),
+        ]),
         while: (error) => RETRYABLE_CODES.has(error.code),
       }),
     );

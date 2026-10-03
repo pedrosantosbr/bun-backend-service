@@ -48,7 +48,7 @@ export const requeueStuckTasks = Effect.gen(function* () {
         });
         requeued++;
       }).pipe(
-        Effect.catchAll((error) =>
+        Effect.catch((error) =>
           Effect.logError("failed to requeue stuck task", {
             taskId: task.id,
             error: String(error),
@@ -66,7 +66,7 @@ export const requeueStuckTasks = Effect.gen(function* () {
         .send(config.taskQueueUrl, { body: encodeTaskExecuteMessage(task.id) })
         .pipe(
           Effect.tap(() => Effect.sync(() => reenqueuedPending++)),
-          Effect.catchAll((error) =>
+          Effect.catch((error) =>
             Effect.logError("failed to re-enqueue stale pending task", {
               taskId: task.id,
               error: String(error),
@@ -88,7 +88,7 @@ export const requeueStuckTasks = Effect.gen(function* () {
 
 let runtime:
   | ManagedRuntime.ManagedRuntime<
-      Effect.Effect.Context<typeof requeueStuckTasks>,
+      Effect.Services<typeof requeueStuckTasks>,
       unknown
     >
   | undefined;

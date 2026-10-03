@@ -1,4 +1,4 @@
-import { HttpClient } from "@effect/platform";
+import { HttpClient } from "effect/http";
 import { AppError, ProviderError } from "@template/shared/errors";
 import { Effect, Layer, Redacted, Schema } from "effect";
 import { makeJsonRequest } from "../http/base-client";
@@ -15,7 +15,7 @@ const toProviderError = (error: AppError): ProviderError =>
     cause: error,
   });
 
-const decodeEchoResult = Schema.decodeUnknown(EchoResult);
+const decodeEchoResult = Schema.decodeUnknownEffect(EchoResult);
 
 /**
  * Real HTTP implementation. The base client already retried transient

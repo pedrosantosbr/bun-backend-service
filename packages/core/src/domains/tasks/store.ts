@@ -59,10 +59,9 @@ export interface TaskStoreShape {
   ) => Effect.Effect<readonly TaskRow[], DatabaseQueryError>;
 }
 
-export class TaskStore extends Context.Tag("@template/core/TaskStore")<
-  TaskStore,
-  TaskStoreShape
->() {}
+export class TaskStore extends Context.Service<TaskStore, TaskStoreShape>()(
+  "@template/core/TaskStore",
+) {}
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;

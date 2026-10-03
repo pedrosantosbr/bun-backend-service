@@ -11,7 +11,7 @@ export interface EchoRequest {
  */
 export const EchoResult = Schema.Struct({
   echoed: Schema.String,
-  sentiment: Schema.Literal("positive", "neutral", "negative"),
+  sentiment: Schema.Literals(["positive", "neutral", "negative"]),
   processedAt: Schema.String,
 });
 

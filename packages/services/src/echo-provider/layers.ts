@@ -10,7 +10,7 @@ import { EchoProviderHttpLive } from "./http-live";
  * uses the real HTTP client, anything else the deterministic fake. Both
  * branches are fully self-contained apart from AppConfigService.
  */
-export const EchoProviderLive = Layer.unwrapEffect(
+export const EchoProviderLive = Layer.unwrap(
   Effect.gen(function* () {
     const config = yield* AppConfigService;
     if (config.echoProvider.mode === "http") {

@@ -17,13 +17,13 @@ describe("queue message contracts", () => {
         '{"type":"task.execute","taskId":"not-a-uuid"}',
       ).pipe(Effect.flip),
     );
-    expect(result._tag).toBe("ParseError");
+    expect(result._tag).toBe("SchemaError");
   });
 
   it("rejects non-JSON bodies", async () => {
     const result = await Effect.runPromise(
       decodeTaskExecuteMessage("not json").pipe(Effect.flip),
     );
-    expect(result._tag).toBe("ParseError");
+    expect(result._tag).toBe("SchemaError");
   });
 });

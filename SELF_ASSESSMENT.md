@@ -12,7 +12,7 @@ based on what is actually in the repo (not what is aspired to). Scale 1–5.
 - Strict, lint-enforced layer boundaries (`shared ← services ← core ←
 api/functions`) make dependency direction a build failure instead of a
   review argument.
-- One convention everywhere: interface + `Context.Tag` + Layer; tagged
+- One convention everywhere: interface + `Context.Service` + Layer; tagged
   errors in one shared module; every Promise wrapped through `runQuery` /
   `runMongo` / `trySqs` helpers. A reader who has seen one domain has seen
   them all.
